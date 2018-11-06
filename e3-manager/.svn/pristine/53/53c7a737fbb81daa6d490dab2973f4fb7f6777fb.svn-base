@@ -1,0 +1,55 @@
+package com.e3.service.impl;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketException;
+import java.util.UUID;
+
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.e3.service.ImageService;
+import com.sun.tools.doclets.internal.toolkit.util.DocFinder.Input;
+@Service
+public class ImageServiceImpl implements ImageService {
+	@Value("${FTP_HOSTNAME}")
+	private String hostname;
+	@Value("${FTP_PORT}")
+	private Integer port;
+	@Value("${FTP_IMAGE}")
+	private String pathname;
+	@Value("${FTP_USERNAME}")
+	private String username;
+	@Value("${FTP_PASSWORD}")
+	private String password;
+	@Override
+	public String uploadImage(byte[] bytes) {
+		String filename=UUID.randomUUID().toString()+".png";
+		String path="http://"+hostname+"/"+filename;
+		FTPClient ftpClient = new FTPClient();
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+		try {
+			ftpClient.connect(hostname, port);
+			ftpClient.login(username, password);
+            ftpClient.changeWorkingDirectory(pathname);
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);  
+            ftpClient.setControlEncoding("UTF-8");   
+            ftpClient.storeFile(filename, byteArrayInputStream);
+            byteArrayInputStream.close();
+            ftpClient.logout();
+		
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			return path;
+
+	}
+
+}

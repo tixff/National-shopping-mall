@@ -1,0 +1,31 @@
+package com.e3.search.test;
+
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.e3.bean.SearchItem;
+import com.e3.bean.SearchResult;
+import com.e3.search.service.SearchItemService;
+import com.e3.search.service.impl.SearchItemServiceImpl;
+
+public class TestSer {
+	@Test
+	public void testSearchItemService() throws Exception {
+		ApplicationContext ap = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+		SearchItemService serviceImpl = ap.getBean(SearchItemServiceImpl.class);
+		SearchResult  result = serviceImpl.searchItem("手机", 0, 10);
+		System.out.println(result.getPage());
+		System.out.println(result.getRecourdCount());
+		System.out.println(result.getQuery());
+		System.out.println(result.getTotalPages());
+		List<SearchItem> itemList = result.getItemList();
+		for (SearchItem searchItem : itemList) {
+			String title = searchItem.getTitle();
+			System.out.println(title);
+		}
+	}
+
+}

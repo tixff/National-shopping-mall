@@ -1,0 +1,42 @@
+package com.e3.controller;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.druid.support.json.JSONUtils;
+import com.e3.service.ImageService;
+
+@Controller
+public class ImageController {
+
+	@Autowired
+	private ImageService imageService;
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@RequestMapping("/pic/upload")
+	@ResponseBody
+	public String uploadImage(MultipartFile uploadFile){
+
+		Map imageReturn =  new HashMap<String,String>();
+		try {
+			byte[] bytes = uploadFile.getBytes();
+			String imageUrl = imageService.uploadImage(bytes);
+			imageReturn.put("error", 0);
+			imageReturn.put("url", imageUrl);
+		} catch (Exception e) {
+			imageReturn.put("error", 1);
+			imageReturn.put("message", "上传发生错误");
+			return JSONUtils.toJSONString(imageReturn);
+		}
+		String jsonString = JSONUtils.toJSONString(imageReturn);
+		return jsonString;
+	}
+}

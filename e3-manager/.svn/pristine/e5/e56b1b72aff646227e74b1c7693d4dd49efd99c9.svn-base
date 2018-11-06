@@ -1,0 +1,8 @@
+package com.e3.service;
+
+import com.e3.utils.PageBean;
+
+public interface ContentService {
+	PageBean  getContentList(long id,Integer page,Integer rows);
+
+}

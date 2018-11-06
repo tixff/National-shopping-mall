@@ -1,0 +1,10 @@
+package com.e3.service;
+
+import com.e3.pojo.Item;
+import com.e3.utils.PageBean;
+
+public interface ItemService {
+
+	public Item getItemById(long id);
+	public PageBean getItemList(int page,int rows);
+}

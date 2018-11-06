@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+	http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd">
+
+	<!-- 配置包扫描器 -->
+	<context:component-scan base-package="com.e3.content.service"/>
+	
+	<!-- 使用dubbo发布服务 -->
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="e3-manager" />
+	<dubbo:registry protocol="zookeeper" address="localhost:2181" />
+	<!-- 用dubbo协议在20889端口暴露服务 -->
+	<dubbo:protocol name="dubbo" port="20889" />
+	<!-- 声明需要暴露的服务接口 -->
+	<dubbo:service interface="com.e3.content.service.ContentCategoryService" ref="contentCategoryServiceImpl" timeout="600000" />
+	<dubbo:service interface="com.e3.content.service.ContentService" ref="contentServiceImpl" timeout="600000" />
+	
+	<!-- ActiveMq配置 -->
+	<!-- 发送消息 -->
+	<!-- 1.创建工厂对象 -->
+	<!--<bean name="activemqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<constructor-arg name="brokerURL" value="tcp://192.168.18.129:61616" />
+	</bean>
+	&lt;!&ndash; 2.spring 管理的工厂对象 &ndash;&gt;
+	<bean name="springConnectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+		<constructor-arg name="targetConnectionFactory" ref="activemqConnectionFactory" />
+	</bean>
+	&lt;!&ndash; 3.创建template(producer) &ndash;&gt;
+	<bean name="jsmTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<constructor-arg name="connectionFactory" ref="springConnectionFactory" />
+	</bean>
+	&lt;!&ndash; 4.创建ActiveMQ的distination(queue,topic) &ndash;&gt;
+	&lt;!&ndash; queue &ndash;&gt;
+	<bean name="activeMQqueue" class="org.apache.activemq.command.ActiveMQQueue"> 
+		<property name="physicalName" value="contentQueue" />
+	</bean>
+	&lt;!&ndash; topic &ndash;&gt;
+	<bean name="activeMQtopic" class="org.apache.activemq.command.ActiveMQTopic">
+		<property name="physicalName" value="topicQueue" />
+	</bean>
+	&lt;!&ndash; 接收消息 &ndash;&gt;
+	&lt;!&ndash; 配置监听器 &ndash;&gt;
+	<bean name="contentListener" class="com.e3.content.activemq.listener.ContentListener" />
+	&lt;!&ndash; 把监听器交给spring管理 &ndash;&gt;
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="springConnectionFactory"/>
+		<property name="destination" ref="activeMQqueue"/>
+		<property name="messageListener" ref="contentListener"/>
+	</bean>-->
+	
+	 
+	<!-- activeMq 配置练习 -->
+	<!-- 配置工厂对象 -->
+	<!-- <bean name="activeMq" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp:192.168.18.129:61616"></property>
+	 </bean>
+	<bean name="springActiveMQ" class="org.springframework.jms.connection.SingleConnectionFactory">
+		<property name="targetConnectionFactory" ref="activMq"></property>
+	</bean>
+	配置生产者
+	<bean name="producer" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="springActiveMQ"></property>
+	</bean>
+	配置服务模式
+	1.quere 模式
+	<bean name="queue" class="org.apache.activemq.command.ActiveMQQueue">
+		<property name="physicalName" value="testQueue"></property>
+	</bean>
+	2.topic模式
+	<bean name="topic" class="org.apache.activemq.command.ActiveMQTopic" >
+		<property name="phsicalName" value="testTopic"></property>
+	</bean>
+	接收者配置 consumer
+	<bean name="consumer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> </bean>
+	 -->
+</beans>

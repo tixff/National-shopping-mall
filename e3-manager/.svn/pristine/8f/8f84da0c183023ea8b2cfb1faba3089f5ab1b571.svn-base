@@ -1,0 +1,37 @@
+package com.e3.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.e3.bean.TreeBean;
+import com.e3.mapper.ContentCategoryMapper;
+import com.e3.pojo.ContentCategory;
+import com.e3.pojo.ContentCategoryExample;
+import com.e3.service.ContentCategoryService;
+@Service
+public class ContentCategoryServiceImpl implements ContentCategoryService {
+
+	@Autowired
+	private ContentCategoryMapper contentCategoryMapper;
+	@Override
+	public List<TreeBean> getContentCategory(long parentId) {
+		List<TreeBean> list = new ArrayList<>();
+		ContentCategoryExample example = new ContentCategoryExample();
+		example.createCriteria().andParentIdEqualTo(parentId);
+		List<ContentCategory> categoryList = contentCategoryMapper.selectByExample(example);
+		if(categoryList!=null&&categoryList.size()>0){
+			for (ContentCategory contentCategory : categoryList) {
+				TreeBean bean = new TreeBean();
+				bean.setId(contentCategory.getId());
+				bean.setText(contentCategory.getName());
+				bean.setState(contentCategory.getIsParent()?"closed":"open");
+				list.add(bean);
+			}
+		}
+		return list;
+	}
+
+}

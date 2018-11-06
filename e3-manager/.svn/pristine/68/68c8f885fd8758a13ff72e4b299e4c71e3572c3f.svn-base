@@ -1,0 +1,41 @@
+package com.e3.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.e3.mapper.ItemMapper;
+import com.e3.pojo.Item;
+import com.e3.pojo.ItemExample;
+import com.e3.service.ItemService;
+import com.e3.utils.PageBean;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+@Service
+public class ItemServiceImpl implements ItemService {
+
+	@Autowired
+	private ItemMapper itemMapper;
+	@Override
+	public Item getItemById(long id) {
+		Item item = itemMapper.selectByPrimaryKey(id);
+		return item;
+	}
+	@Override
+	public PageBean getItemList(int page, int rows) {
+		PageBean pageBean = new PageBean();
+		Map<String, Integer> map = new HashMap<>();
+		map.put("start", (page-1)*rows);
+		map.put("count", rows);
+		List<Item> list = itemMapper.queryItem(map);
+		int count = itemMapper.countByExample(new ItemExample());
+		pageBean.setRows(list);
+		pageBean.setTotal((long)count);
+		return pageBean;
+
+	}
+
+}

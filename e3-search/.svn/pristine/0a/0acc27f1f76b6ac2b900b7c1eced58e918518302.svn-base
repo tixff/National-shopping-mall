@@ -1,0 +1,79 @@
+package com.e3.search.test;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.util.NamedList;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class TestSolr {
+	
+	@Test
+	public void testQuery() throws Exception {
+		ApplicationContext ap = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+		SolrServer solrServer = ap.getBean(SolrServer.class);
+		SolrQuery query = new SolrQuery();
+		query.setQuery("手机");
+		query.set("df", "item_title");
+		query.setHighlight(true);
+		query.setHighlightSimplePre("<em style:\"color:red\">");
+		query.setHighlightSimplePost("</em>");
+		QueryResponse response = solrServer.query(query);
+		SolrDocumentList list = response.getResults();
+		Map<String, Map<String, List<String>>> highlighting = response.getHighlighting();
+		for (SolrDocument solrDocument : list) {
+			List<String> list2 = highlighting.get(solrDocument.get("id")).get("item_title");
+			String itemTitle = (String) solrDocument.get("item_title");
+			System.out.println(itemTitle);
+			System.err.println(list2.get(0).toString());
+		}
+		
+			
+	}
+	@Test
+	public void testAdd() throws Exception {
+		ApplicationContext ap = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+		SolrServer solrServer = ap.getBean(SolrServer.class);
+		SolrInputDocument document = new SolrInputDocument();
+		document.setField("id", 110);
+		document.setField("item_title", "索尼照相机，你值得拥有");
+		document.setField("item_desc", "今年最新款");
+		solrServer.add(document);
+		solrServer.commit();
+	}
+	@Test
+	public void testUpdate() throws Exception {
+		//先查询再修改
+		ApplicationContext ap = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+		SolrServer solrServer = ap.getBean(SolrServer.class);
+		SolrInputDocument document = new SolrInputDocument();
+		SolrQuery query = new SolrQuery();
+		query.setQuery("id:110");
+		QueryResponse response = solrServer.query(query);
+		SolrDocument solrDocument = response.getResults().get(0);
+		solrDocument.setField("item_title", "索尼相机更新版本");
+		SolrInputDocument document2 = new SolrInputDocument();
+		document.setField("id", solrDocument.get("id"));
+		document.setField("item_title", solrDocument.get("item_title"));
+		document.setField("item_desc", solrDocument.get("item_desc"));
+		solrServer.add(document);
+		solrServer.commit();
+		
+	}
+	@Test
+	public void testDelete() throws Exception {
+		ApplicationContext ap = new ClassPathXmlApplicationContext("classpath:spring/applicationContext-*.xml");
+		SolrServer solrServer = ap.getBean(SolrServer.class);
+		solrServer.deleteById("110");
+		solrServer.commit();
+	}
+
+}

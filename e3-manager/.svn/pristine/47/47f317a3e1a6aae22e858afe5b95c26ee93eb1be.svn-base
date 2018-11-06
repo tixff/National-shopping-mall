@@ -1,0 +1,5 @@
+FTP_HOSTNAME=http://192.168.18.129
+FTP_PORT=21
+FTP_USERNAME=ftpuser
+FTP_PASSWORD=ftpuser
+FTP_IMAGE=/usr/local/ftphome/image

@@ -1,0 +1,39 @@
+package com.e3.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.zookeeper.Op.Create;
+import org.omg.CORBA.PUBLIC_MEMBER;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.e3.mapper.ContentMapper;
+import com.e3.pojo.Content;
+import com.e3.pojo.ContentExample;
+import com.e3.pojo.ContentExample.Criteria;
+import com.e3.service.ContentService;
+import com.e3.utils.PageBean;
+@Service
+public class ContentServiceImpl implements ContentService{
+
+	@Autowired
+	private ContentMapper contentMapper;
+	@Override
+	public PageBean getContentList(long id, Integer page, Integer rows) {
+		PageBean pageBean = new PageBean();
+		ContentExample example = new ContentExample();
+		example.createCriteria().andCategoryIdEqualTo(id);
+		int count = contentMapper.countByExample(example);
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("id", id);
+		map.put("start", (page-1)*rows);
+		map.put("rows", rows);
+		List<Content> list = contentMapper.getContentListByCId(map);
+		pageBean.setTotal((long)count);
+		pageBean.setRows(list);
+		return pageBean;
+	}
+
+}

@@ -1,0 +1,24 @@
+package com.e3.test;
+
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.e3.service.impl.ImageServiceImpl;
+
+public class TestService {
+	@Test
+	public void testFtp() throws Exception {
+		ApplicationContext context =new ClassPathXmlApplicationContext("classpath:spring/*.xml");
+		String str = "C:\\Users\\Ti\\Pictures\\Screenshots\\1.jpg";
+		File file = new File(str);
+		System.out.println(file.exists());
+		ImageServiceImpl imageServiceImpl = context.getBean(ImageServiceImpl.class);
+		imageServiceImpl.uploadImage(new FileInputStream(file));
+	}
+}
